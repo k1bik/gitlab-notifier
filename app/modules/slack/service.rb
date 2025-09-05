@@ -1,15 +1,5 @@
 module Slack
   class Service
-    def send_message(email:, text:)
-      user_mapping = UserMapping.find_by(email:)
-
-      return if user_mapping.blank?
-
-      slack_connection.post("chat.postMessage") do |request|
-        request.body = { channel: user_mapping.slack_channel_id, text: }.to_json
-      end
-    end
-
     def find_user_id_by_email(email)
       response = slack_connection.get("users.lookupByEmail") do |request|
         request.params["email"] = email

@@ -8,9 +8,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  post "merge_request_events_gitlab_webhook", to: "merge_request_events_gitlab_webhook#create"
+  post "merge_request_labels_gitlab_webhook", to: "merge_request_labels_gitlab_webhook#create"
 
   namespace :api do
     resources :user_mappings, only: %i[create]
+    resources :observable_labels, only: %i[create destroy]
   end
 end

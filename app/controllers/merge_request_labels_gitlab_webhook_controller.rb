@@ -1,13 +1,13 @@
-class MergeRequestEventsGitlabWebhookController < ApplicationController
+class MergeRequestLabelsGitlabWebhookController < ApplicationController
   def create
     return unless merge_request_event?
 
-    if (label_name = "Need Improvements") && label_added?(label_name)
-      send_notification(label_name)
-    end
+    observable_labels = ObservableLabel.pluck(:name)
 
-    if (label_name = "Need QA") && label_added?(label_name)
-      send_notification(label_name)
+    observable_labels.each do |label_name|
+      if label_added?(label_name)
+        send_notification(label_name)
+      end
     end
   end
 
@@ -24,7 +24,7 @@ class MergeRequestEventsGitlabWebhookController < ApplicationController
     merge_request_url = "#{project_url}/merge_requests/#{merge_request_iid}"
     text = "*#{label_name}* label was added to the <#{merge_request_url}|#{merge_request_title}>"
 
-    Slack::Service.new.send_message(email: author_email, text:)
+    Slack::SendDmMessageJob.perform_async(author_email, text)
   end
 
   def current_labels = params.dig("changes", "labels", "current") || []

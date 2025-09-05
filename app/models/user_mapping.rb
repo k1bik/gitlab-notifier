@@ -1,5 +1,5 @@
 class UserMapping < ApplicationRecord
-  before_validation :strip_whitespace
+  before_validation :strip_whitespace, on: :create
 
   validates :email, :slack_user_id, :slack_channel_id, presence: true, uniqueness: { case_sensitive: false }
 
