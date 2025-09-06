@@ -1,8 +1,17 @@
 development:
-  url: <%= "postgresql://development:development@localhost:5432/gitlab_notifier" %>
+  url: <%= ENV["DATABASE_URL"] %>
 
 test:
-  url: <%= "postgresql://development:development@localhost:5432/gitlab_notifier_test" %>
+  url: <%= ENV["DATABASE_URL"] %>
 
 production:
+  url: <%= ENV["DATABASE_URL"] %>
+
+cable:
+  url: <%= ENV["DATABASE_URL"] %>
+
+cache:
+  url: <%= ENV["DATABASE_URL"] %>
+
+queue:
   url: <%= ENV["DATABASE_URL"] %>

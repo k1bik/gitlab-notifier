@@ -1,0 +1,29 @@
+services:
+  postgresql:
+    container_name: "gitlab_notifier_postgresql"
+    hostname: "gitlab_notifier_postgresql"
+    image: postgres:16.1
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=development
+      - POSTGRES_PASSWORD=development
+      - POSTGRES_DB=gitlab_notifier_development
+    volumes:
+      - "/var/run/postgres/postgres.sock:/var/run/postgres/postgres.sock"
+      - "dbdata:/var/lib/postgresql/data"
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    command: redis-server --save 60 1 --loglevel warning
+
+volumes:
+  dbdata:
+  redis-data:

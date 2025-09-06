@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   postgresql:
     container_name: "gitlab_notifier_postgresql"
@@ -8,15 +7,21 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - PGUSER=development
-      - POSTGRES_USER=development
-      - POSTGRES_PASSWORD=development
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
-      - "/var/run/postgres/postgres.sock:/var/run/postgres/postgres.sock"
       - "dbdata:/var/lib/postgresql/data"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
+    container_name: "gitlab_notifier_redis"
     image: redis:7
+    restart: always
     ports:
       - "6379:6379"
     volumes:
@@ -24,6 +29,60 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     command: redis-server --save 60 1 --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    container_name: "gitlab_notifier_web"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "80:80"
+    env_file:
+      - .env
+    environment:
+      - RAILS_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - /rails/tmp
+      - /rails/log
+      - /rails/storage
+
+  sidekiq:
+    container_name: "gitlab_notifier_sidekiq"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    env_file:
+      - .env
+    environment:
+      - RAILS_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=redis://redis:6379/0
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - /rails/tmp
+      - /rails/log
+      - /rails/storage
 
 volumes:
   dbdata:

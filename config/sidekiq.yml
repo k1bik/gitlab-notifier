@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+:concurrency: 5
+:timeout: 30
+:retry: 3
+
+:queues:
+  - default
+
+:redis:
+  :url: <%= ENV.fetch("REDIS_URL", "redis://localhost:6379/0") %>
+  :namespace: gitlab_notifier

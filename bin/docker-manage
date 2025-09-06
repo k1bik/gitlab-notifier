@@ -1,0 +1,63 @@
+#!/bin/bash
+
+# Docker production helper script for gitlab-notifier
+
+set -e
+
+case "$1" in
+  "up")
+    echo "🚀 Starting all services in production mode..."
+    docker compose up --build
+    ;;
+  "down")
+    echo "🛑 Stopping all services..."
+    docker compose down
+    ;;
+  "logs")
+    echo "📋 Showing logs for $2..."
+    docker compose logs -f ${2:-web}
+    ;;
+  "console")
+    echo "💻 Opening Rails console..."
+    docker compose exec web bin/rails console
+    ;;
+  "migrate")
+    echo "🗄️  Running database migrations..."
+    docker compose exec web bin/rails db:migrate
+    ;;
+  "setup")
+    echo "🔧 Setting up the application..."
+    echo "Creating database..."
+    docker compose exec web bin/rails db:create
+    echo "Running migrations..."
+    docker compose exec web bin/rails db:migrate
+    echo "✅ Setup complete!"
+    ;;
+  "clean")
+    echo "🧹 Cleaning up containers and volumes..."
+    docker compose down -v
+    docker system prune -f
+    echo "✅ Cleanup complete!"
+    ;;
+  "build")
+    echo "🔨 Building production images..."
+    docker compose build --no-cache
+    echo "✅ Build complete!"
+    ;;
+  *)
+    echo "Usage: $0 {up|down|logs|console|migrate|setup|clean|build}"
+    echo ""
+    echo "Commands:"
+    echo "  up       - Start all services in production mode"
+    echo "  down     - Stop all services"
+    echo "  logs     - Show logs (optionally specify service: web, sidekiq, postgresql, redis)"
+    echo "  console  - Open Rails console"
+    echo "  migrate  - Run database migrations"
+    echo "  setup    - Initial setup (create DB + migrate)"
+    echo "  clean    - Clean up containers and volumes"
+    echo "  build    - Build production images"
+    echo ""
+    echo "Application will be available at: http://localhost"
+    exit 1
+    ;;
+esac
