@@ -30,7 +30,12 @@ module Slack
 
     def send_dm(user_mapping, text)
       connection.post("chat.postMessage") do |request|
-        request.body = { channel: user_mapping.slack_channel_id, text: }.to_json
+        request.body = {
+          channel: user_mapping.slack_channel_id,
+          text:,
+          unfurl_links: false,
+          unfurl_media: false
+        }.to_json
       end
     end
 
