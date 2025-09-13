@@ -8,9 +8,7 @@ module Slack
 
       return if user_mapping.blank?
 
-      Service.new.slack_connection.post("chat.postMessage") do |request|
-        request.body = { channel: user_mapping.slack_channel_id, text: }.to_json
-      end
+      Service.new.send_dm(user_mapping, text)
     end
   end
 end

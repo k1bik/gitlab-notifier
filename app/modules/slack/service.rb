@@ -1,11 +1,11 @@
 module Slack
   class Service
     def find_user_id_by_email(email)
-      response = slack_connection.get("users.lookupByEmail") do |request|
+      response = connection.get("users.lookupByEmail") do |request|
         request.params["email"] = email
       end
 
-      handle_response(response) do |body|
+      http_client.handle_response(response) do |body|
         unless body["user"] && body["user"]["id"]
           raise "User not found or invalid response structure"
         end
@@ -15,11 +15,11 @@ module Slack
     end
 
     def open_dm(slack_user_id)
-      response = slack_connection.post("conversations.open") do |request|
+      response = connection.post("conversations.open") do |request|
         request.body = { users: slack_user_id }.to_json
       end
 
-      handle_response(response) do |body|
+      http_client.handle_response(response) do |body|
         unless body["channel"] && body["channel"]["id"]
           raise "Invalid response structure: channel or channel.id not found"
         end
@@ -28,35 +28,26 @@ module Slack
       end
     end
 
-    def slack_connection
-      @slack_connection ||= Faraday.new(
-        url: "https://slack.com/api",
+    def send_dm(user_mapping, text)
+      connection.post("chat.postMessage") do |request|
+        request.body = { channel: user_mapping.slack_channel_id, text: }.to_json
+      end
+    end
+
+    private
+
+    def http_client
+      @http_client ||= Http::Client.new
+    end
+
+    def connection
+      @connection ||= http_client.connection(
+        url: ENV["SLACK_API_URL"],
         headers: {
           "Content-Type" => "application/json",
           "Authorization" => "Bearer #{ENV["SLACK_OAUTH_TOKEN"]}"
         }
       )
-    end
-
-    def handle_response(response)
-      unless response.success?
-        raise "HTTP error: #{response.status} - #{response.reason_phrase}"
-      end
-
-      body = JSON.parse(response.body)
-    rescue JSON::ParserError => e
-      raise "Failed to parse Slack API response: #{e.message}"
-    rescue Faraday::Error => e
-      raise "Network error when calling Slack API: #{e.message}"
-    rescue StandardError => e
-      raise "Unexpected error: #{e.message}"
-    else
-      unless body["ok"]
-        error_message = body["error"] || "Unknown error"
-        raise "Slack API error: #{error_message}"
-      end
-
-      yield(body)
     end
   end
 end

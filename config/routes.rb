@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   # root "posts#index"
 
   post "merge_request_labels_gitlab_webhook", to: "merge_request_labels_gitlab_webhook#create"
+  post "deployment_events_gitlab_webhook", to: "deployment_events_gitlab_webhook#create"
 
   namespace :api do
     resources :user_mappings, only: %i[create]
