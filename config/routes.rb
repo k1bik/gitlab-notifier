@@ -14,5 +14,6 @@ Rails.application.routes.draw do
   namespace :api do
     resources :user_mappings, only: %i[create]
     resources :observable_labels, only: %i[create destroy]
+    resources :messages, only: %i[create]
   end
 end
