@@ -2,9 +2,7 @@ class MergeRequestLabelsGitlabWebhookController < ApplicationController
   def create
     return unless merge_request_event?
 
-    observable_labels = ObservableLabel.pluck(:name)
-
-    observable_labels.each do |label_name|
+    Setting.observable_labels.each do |label_name|
       if label_added?(label_name)
         send_notification(label_name)
       end

@@ -31,5 +31,6 @@ module GitlabNotifier
 
     # Configure Active Job to use Sidekiq
     config.active_job.queue_adapter = :sidekiq
+    config.hosts << "a89c6a3a582b.ngrok-free.app"
   end
 end

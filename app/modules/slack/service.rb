@@ -28,11 +28,16 @@ module Slack
       end
     end
 
-    def send_dm(user_mapping, text)
+    def send_dm(user_mapping, text = nil, blocks = [])
+      if text.blank? && blocks.blank?
+        raise ArgumentError, "Text or blocks are required"
+      end
+
       connection.post("chat.postMessage") do |request|
         request.body = {
           channel: user_mapping.slack_channel_id,
           text:,
+          blocks:,
           unfurl_links: false,
           unfurl_media: false
         }.to_json
