@@ -4,8 +4,8 @@ services:
     hostname: "gitlab_notifier_postgresql"
     image: postgres:16.1
     restart: always
-    ports:
-      - "5432:5432"
+    expose:
+      - "5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -22,8 +22,8 @@ services:
     container_name: "gitlab_notifier_redis"
     image: redis:7
     restart: always
-    ports:
-      - "6379:6379"
+    expose:
+      - "6379"
     volumes:
       - redis-data:/data
     environment:
