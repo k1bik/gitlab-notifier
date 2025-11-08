@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
-  post "merge_request_labels_gitlab_webhook", to: "merge_request_labels_gitlab_webhook#create"
-  post "pipeline_events_gitlab_webhook", to: "pipeline_events_gitlab_webhook#create"
+  post "merge_request_events_gitlab_webhook", to: "merge_request_events_gitlab_webhook#create"
+  post "deployment_events_gitlab_webhook", to: "deployment_events_gitlab_webhook#create"
   post "interactive_messages_slack_webhook", to: "interactive_messages_slack_webhook#create"
 
   namespace :api do
