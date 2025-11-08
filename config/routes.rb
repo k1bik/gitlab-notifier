@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     resources :user_mappings, only: %i[create]
     resources :observable_labels, only: %i[create]
     resources :messages, only: %i[create]
+    resources :temporary_deployment_notification_targets, only: %i[create]
     resources :estimation_items, only: %i[create] do
       get :send_results, on: :member
     end

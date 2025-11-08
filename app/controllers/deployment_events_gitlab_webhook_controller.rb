@@ -8,15 +8,21 @@ class DeploymentEventsGitlabWebhookController < ApplicationController
     commit_title = params.dig("commit_title")
 
     if (user_mapping = UserMapping.find_by(gitlab_id: gitlab_user_id)).present?
-      text = case status
-      when "running"
-        "🚀 Deployment of <#{commit_url}|#{commit_title}> to <#{deployable_url}|#{environment}> has started — fingers crossed 🤞"
-      when "success"
-        "✅ <#{commit_url}|#{commit_title}> was successfully deployed to <#{deployable_url}|#{environment}> — great job! 🎉"
-      when "canceled"
-        "⚪️ Deployment of <#{commit_url}|#{commit_title}> to <#{deployable_url}|#{environment}> was canceled — maybe later ⏸️"
-      when "failed"
-        "❌ Deployment of <#{commit_url}|#{commit_title}> to <#{deployable_url}|#{environment}> didn’t go as planned 😞 — check the logs 🧾"
+      text = {
+        "running"  => "🚀 Deployment of <#{commit_url}|#{commit_title}> to <#{deployable_url}|#{environment}> has started — fingers crossed 🤞",
+        "success"  => "✅ <#{commit_url}|#{commit_title}> was successfully deployed to <#{deployable_url}|#{environment}> — great job! 🎉",
+        "canceled" => "⚪️ Deployment of <#{commit_url}|#{commit_title}> to <#{deployable_url}|#{environment}> was canceled — maybe later ⏸️",
+        "failed"   => "❌ Deployment of <#{commit_url}|#{commit_title}> to <#{deployable_url}|#{environment}> didn’t go as planned 😞 — check the logs 🧾"
+      }[status]
+
+      return if text.blank?
+
+      TemporaryDeploymentNotificationTarget.where(environment:).find_each do |target|
+        next if status != "success"
+
+        Slack::SendDmMessageJob.perform_async(target.slack_channel_id, text)
+
+        target.destroy!
       end
 
       Slack::SendDmMessageJob.perform_async(user_mapping.email, text)

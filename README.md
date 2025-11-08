@@ -10,6 +10,7 @@ A Rails application that integrates GitLab webhooks with Slack notifications to 
 - 🏷️ **Label Filtering**: Configure which labels trigger notifications
 - 🥷 **Estimation items**: What the team members need to evaluate
 - 💬 **Interactive Messages**: Handle Slack interactive message responses
+- ✉️ **Temporary Deployment Notification Targets**: Define temporary destinations for deployment notifications — messages can be redirected to a specific Slack channel or user for a limited time
 
 ## API Endpoints
 
@@ -70,8 +71,22 @@ curl -X GET https://your-domain.com/api/estimation_items/:id/send_results \
   -H "Content-Type: application/json"
 ```
 
+### Temporary Deployment Notification Targets
+
+Create Temporary Deployment Notification Targets (user_email or slack_channel_id)
+
+```bash
+curl -X POST https://your-domain.com/api/temporary_deployment_notification_targets \
+  -H "Content-Type: application/json" \
+  -d '{
+    "environment": "dev",
+    "user_email": "user1@example.com",
+    "slack_channel_id: "XYZ123"
+  }'
+```
+
 ## Webhook Endpoints
 
 - `POST /deployment_events_gitlab_webhook` - GitLab deployment events
-- `POST /merge_request_labels_gitlab_webhook` - GitLab merge request label changes
+- `POST /merge_request_events_gitlab_webhook` - GitLab merge request changes
 - `POST /interactive_messages_slack_webhook` - Slack interactive message responses
