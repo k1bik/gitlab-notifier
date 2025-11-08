@@ -67,7 +67,7 @@ module EstimationItems
         slack_service = Slack::Service.new
 
         estimations.each do |estimation|
-          slack_service.send_dm(estimation.user_mapping, nil, blocks)
+          slack_service.send_message(estimation.user_mapping.slack_channel_id, nil, blocks)
         end
         estimation_item.update!(results_sent: true)
       end
@@ -105,7 +105,7 @@ module EstimationItems
           }
         ]
 
-        slack_service.send_dm(user_mapping, nil, blocks)
+        slack_service.send_message(user_mapping.slack_channel_id, nil, blocks)
       end
     end
   end

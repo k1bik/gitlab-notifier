@@ -10,7 +10,7 @@ module Slack
 
       return if user_mapping.blank?
 
-      Service.new.send_dm(user_mapping, text, blocks)
+      Service.new.send_message(user_mapping.slack_channel_id, text, blocks)
     end
   end
 end
