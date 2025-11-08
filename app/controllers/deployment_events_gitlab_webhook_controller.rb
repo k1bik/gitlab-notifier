@@ -25,7 +25,7 @@ class DeploymentEventsGitlabWebhookController < ApplicationController
         target.destroy!
       end
 
-      Slack::SendDmMessageJob.perform_async(user_mapping.email, text)
+      Slack::SendDmMessageJob.perform_async(user_mapping.slack_channel_id, text)
     end
   end
 end

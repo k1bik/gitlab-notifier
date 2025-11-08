@@ -13,7 +13,7 @@ module Api
         return
       end
 
-      Slack::SendDmMessageJob.perform_async(user_mapping.email, params[:message])
+      Slack::SendDmMessageJob.perform_async(user_mapping.slack_channel_id, params[:message])
 
       render json: { message: "Message sent" }, status: :created
     end

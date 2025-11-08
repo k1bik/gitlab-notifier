@@ -17,7 +17,9 @@ class MergeRequestEventsGitlabWebhookController < ApplicationController
     merge_request_url = "#{project_url}/merge_requests/#{merge_request_iid}"
     text = "🏷️ *#{label_name}* label was added to <#{merge_request_url}|#{merge_request_title}>"
 
-    Slack::SendDmMessageJob.perform_async(author_email, text)
+    if (user_mapping = UserMapping.find_by(email: author_email)).present?
+      Slack::SendDmMessageJob.perform_async(user_mapping.slack_channel_id, text)
+    end
   end
 
   def label_added?(label_name)
