@@ -20,7 +20,7 @@ class DeploymentEventsGitlabWebhookController < ApplicationController
       TemporaryDeploymentNotificationTarget.where(environment:).find_each do |target|
         next if status != "success"
 
-        Slack::SendDmMessageJob.perform_async(target.slack_channel_id, text)
+        Slack::SendDmMessageJob.perform_async(target.slack_channel_id, target.text || text)
 
         target.destroy!
       end

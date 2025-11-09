@@ -1,5 +1,6 @@
 class TemporaryDeploymentNotificationTarget < ApplicationRecord
   validates :environment, :slack_channel_id, presence: true
+  validates :text, length: { maximum: 256 }, allow_blank: true
 
   before_validation :strip_whitespace, on: :create
 

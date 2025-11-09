@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_08_192358) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_09_115013) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -45,6 +45,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_08_192358) do
     t.string "slack_channel_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "text"
   end
 
   create_table "user_mappings", force: :cascade do |t|

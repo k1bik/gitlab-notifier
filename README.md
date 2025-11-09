@@ -81,7 +81,8 @@ curl -X POST https://your-domain.com/api/temporary_deployment_notification_targe
   -d '{
     "environment": "dev",
     "user_email": "user1@example.com",
-    "slack_channel_id: "XYZ123"
+    "slack_channel_id: "XYZ123",
+    "text": "notification text"
   }'
 ```
 

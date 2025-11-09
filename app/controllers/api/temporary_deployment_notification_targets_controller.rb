@@ -4,6 +4,7 @@ module Api
       environment = params[:environment]
       user_email = params[:user_email]
       slack_channel_id = params[:slack_channel_id]
+      text = params[:text]
 
       return render_error("Environment is required") if environment.blank?
       return render_error("User email or Slack channel ID are required") if user_email.blank? && slack_channel_id.blank?
@@ -11,7 +12,11 @@ module Api
 
       slack_channel_id ||= UserMapping.find_by!(email: user_email).slack_channel_id
 
-      TemporaryDeploymentNotificationTarget.create!(environment:, slack_channel_id:)
+      TemporaryDeploymentNotificationTarget.create!(
+        environment:,
+        slack_channel_id:,
+        text:
+      )
 
       render json: { message: "Temporary deployment notification target created" }, status: :created
     end
