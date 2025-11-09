@@ -1,5 +1,21 @@
 class MergeRequestEventsGitlabWebhookController < ApplicationController
   def create
+    action = params.dig("object_attributes", "action")
+    source_branch = params.dig("object_attributes", "source_branch")
+
+    if (slack_channel_id = ENV["SLACK_DEV_CHANNEL_ID"]).present? && source_branch.match?(/\Arelease\/rc-\d+\z/)
+      text = case action
+      when "merge"
+        "🎉 Release branch *#{source_branch}* successfully merged! 🚀 If you have any tasks that still need to go into this release, please change the target branch of their merge requests to *master*"
+      when "open"
+        "🚀 New release branch *#{source_branch}* is ready! If you have any open merge requests for this release, change their target branch to *#{source_branch}*"
+      end
+
+      if text.present?
+        Slack::SendDmMessageJob.perform_async(slack_channel_id, text)
+      end
+    end
+
     Setting.observable_labels.each do |label_name|
       if label_added?(label_name)
         send_notification(label_name)
