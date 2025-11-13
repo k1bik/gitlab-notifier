@@ -21,6 +21,17 @@ class MergeRequestEventsGitlabWebhookController < ApplicationController
         send_notification(label_name)
       end
     end
+
+    detailed_merge_status = params.dig("object_attributes", "detailed_merge_status")
+    project_id = params.dig("project", "id")
+    merge_request_iid = params.dig("object_attributes", "iid")
+    current_labels_titles = current_labels.pluck("title")
+
+    if detailed_merge_status == "conflict" && current_labels_titles.exclude?("Need Rebase")
+      Gitlab::Service.new.update_merge_request(project_id, merge_request_iid) do |params|
+        params[:labels] = (current_labels_titles << "Need Rebase").join(",")
+      end
+    end
   end
 
   private
