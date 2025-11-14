@@ -40,6 +40,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
     restart: always
     ports:
       - "80:80"
@@ -65,6 +66,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
     restart: always
     command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
     env_file:
