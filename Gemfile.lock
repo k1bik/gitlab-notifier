@@ -91,12 +91,17 @@ GEM
     drb (2.2.3)
     erb (5.0.2)
     erubi (1.13.1)
+    et-orbi (1.4.0)
+      tzinfo
     faraday (2.13.4)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
     faraday-net_http (3.4.1)
       net-http (>= 0.5.0)
+    fugit (1.12.1)
+      et-orbi (~> 1.4)
+      raabro (~> 1.4)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.7)
@@ -157,6 +162,7 @@ GEM
       stringio
     puma (7.0.0)
       nio4r (~> 2.0)
+    raabro (1.4.0)
     racc (1.8.1)
     rack (3.2.1)
     rack-session (2.1.1)
@@ -206,6 +212,8 @@ GEM
       connection_pool
     reline (0.6.2)
       io-console (~> 0.5)
+    rufus-scheduler (3.9.2)
+      fugit (~> 1.1, >= 1.11.1)
     securerandom (0.4.1)
     sidekiq (8.0.7)
       connection_pool (>= 2.5.0)
@@ -213,6 +221,9 @@ GEM
       logger (>= 1.6.2)
       rack (>= 3.1.0)
       redis-client (>= 0.23.2)
+    sidekiq-scheduler (6.0.1)
+      rufus-scheduler (~> 3.2)
+      sidekiq (>= 7.3, < 9)
     stringio (3.1.7)
     thor (1.4.0)
     thruster (0.1.15)
@@ -250,6 +261,7 @@ DEPENDENCIES
   rails (~> 8.0.2)
   rails-settings-cached (~> 2.9)
   sidekiq (~> 8.0)
+  sidekiq-scheduler
   thruster
   tzinfo-data
 

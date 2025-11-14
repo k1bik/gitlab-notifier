@@ -18,13 +18,23 @@ module Gitlab
 
     def username_by_email(email) = email.split("@").first
 
-    def update_merge_request(project_id, merge_request_iid, &block)
+    def update_merge_request(merge_request_iid, &block)
       params = {}
       block&.call(params)
 
-      response = connection.put("projects/#{project_id}/merge_requests/#{merge_request_iid}") do |request|
+      response = connection.put("projects/#{ENV["GITLAB_PROJECT_ID"]}/merge_requests/#{merge_request_iid}") do |request|
         request.body = params.to_json
         request.headers["Content-Type"] = "application/json"
+      end
+
+      http_client.handle_response(response) do |body|
+        body
+      end
+    end
+
+    def get_merge_requests(&block)
+      response = connection.get("projects/#{ENV["GITLAB_PROJECT_ID"]}/merge_requests") do |request|
+        block&.call(request)
       end
 
       http_client.handle_response(response) do |body|

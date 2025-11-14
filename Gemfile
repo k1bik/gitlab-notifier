@@ -8,6 +8,7 @@ gem "bootsnap", require: false
 gem "thruster", require: false
 gem "faraday"
 gem "sidekiq", "~> 8.0"
+gem "sidekiq-scheduler"
 gem "rails-settings-cached", "~> 2.9"
 
 group :development, :test do

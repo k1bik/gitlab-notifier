@@ -2,6 +2,7 @@
 
 :concurrency: 5
 :timeout: 30
+:verbose: true
 :retry: 3
 
 :queues:
@@ -10,3 +11,9 @@
 :redis:
   :url: <%= ENV.fetch("REDIS_URL", "redis://localhost:6379/0") %>
   :namespace: gitlab_notifier
+
+:scheduler:
+  :schedule:
+    merge_request_conflict_checker:
+      cron: "*/15 * * * *"   # Runs every 15 minutes
+      class: Gitlab::MergeRequestConflictChecker
