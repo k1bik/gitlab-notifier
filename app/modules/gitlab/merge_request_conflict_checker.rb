@@ -3,6 +3,9 @@ module Gitlab
     include Sidekiq::Job
 
     def perform
+      current_hour = Time.now.in_time_zone("Europe/Moscow").hour
+      return unless current_hour.between?(9, 19)
+
       gitlab_service = Gitlab::Service.new
       last_check_key = "mr_conflict_checker:last_check"
       last_check = Rails.cache.fetch(last_check_key, expires_in: 1.hour) { 15.minutes.ago }
