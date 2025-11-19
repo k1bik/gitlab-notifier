@@ -14,7 +14,7 @@ module Gitlab
       end
 
       merge_requests.each do |merge_request|
-        next if merge_request["detailed_merge_status"] != "conflict"
+        next unless merge_request["has_conflicts"]
 
         labels = merge_request["labels"].dup
 
